@@ -1,7 +1,12 @@
 import React from "react";
-import { StyleSheet, Text, View, Image } from "react-native";
+import { StyleSheet, Text, View, Image, Fragment, ScrollView } from "react-native";
 import { useQuery } from '@apollo/react-hooks';
 import gql from  'graphql-tag';  
+import {
+  responsiveHeight,
+  responsiveWidth,
+  responsiveFontSize
+} from "react-native-responsive-dimensions";
 
 const FETCH_ALL_PLANTS = gql `query {  
   plants {
@@ -19,62 +24,90 @@ export default function Plant() {
     FETCH_ALL_PLANTS
   );
 
-  return (
-    <View style={styles.contentContainer}>
-    {loading ? (
-        <p>Loading ...</p>
-      ) : (
-        data.plants.map(plant => (
-          <View style={styles.plantContainer}>
-            <View style ={styles.plantHeader}>
-              <Image style={styles.logo} source={require("../../assets/plant.png")} />
+  return (<ScrollView style={styles.verticalScrollContainer} showsVerticalScrollIndicator={false}>
+    {loading ? (<Text>Loading...</Text>) : (
+        data.plants.map(plant => {
+          return (
+            <View style={styles.plantContainer}>
+              <View style ={styles.plantHeader}>
+                <Image style={styles.logo} source={require("../../assets/plant.png")} />
+              </View>
+              <View style={styles.textContainer}>
+                <View style ={styles.plantDetails}>
+                  <View style={styles.keyView}>
+                    <Text style={styles.plantKey}>Name:</Text>
+                  </View>
+                  <Text style={styles.plantValue}>{plant.name}</Text>
+                </View>
+                <View style ={styles.plantDetails}>
+                  <View style={styles.keyView}>
+                    <Text style={styles.plantKey}>Soil Moisture:</Text>
+                  </View>
+                  <Text style={styles.plantValue}>{plant.soil.moistureLevel}</Text>
+                </View>
+                <View style ={styles.plantDetails}>
+                  <View style={styles.keyView}>
+                    <Text style={styles.plantKey}>Soil Brand:</Text>
+                  </View>
+                  <Text style={styles.plantValue}>{plant.soil.brand}</Text>
+                </View>
+              </View>
             </View>
-            <View style ={styles.plantDetails}>
-              <Text style={styles.plantKey}>Name:</Text>
-              <Text style={styles.plantValue}>{plant.name}</Text>
-            </View>
-            <View style ={styles.plantDetails}>
-              <Text style={styles.plantKey}>Soil Moisture:</Text>
-              <Text style={styles.plantValue}>{plant.soil.moistureLevel}</Text>
-            </View> 
-            <View style ={styles.plantDetails}>
-              <Text style={styles.plantKey}>Soil Brand:</Text>
-              <Text style={styles.plantValue}>{plant.soil.brand}</Text>
-            </View> 
-          </View>
-        )))}
-  </View>
+          )
+        }))}
+          
+    </ScrollView>
   )
 }
 
 const styles = StyleSheet.create({
-  contentContainer: {
-    flex: 1,
+  verticalScrollContainer: {
+    backgroundColor: "white",
   },
   plantContainer: {
+    flexDirection: 'row',
     alignItems: "center",
     borderColor: 'lightgrey',
     borderBottomWidth: 1,
-    marginTop: 10
+    backgroundColor: "white",
+    width: responsiveWidth(100),
+    paddingTop: responsiveHeight(1),
+    paddingBottom: responsiveHeight(1),
+    paddingLeft: responsiveHeight(1),
+    paddingRight: responsiveHeight(1),
   },
   plantHeader: {
-    alignItems: "center"
+    alignItems: "center",
+    borderColor: 'lightgrey',
+    borderWidth: 3,
+    height: 130,
+    width: 130,
+    overflow: 'hidden',
   },
   plantDetails: {
+    alignItems: "center",
+    marginHorizontal: "auto",
     flexDirection: 'row',
-    alignItems: 'center',
+  },
+  textContainer: {
+    marginLeft: responsiveWidth(10),
+    flexDirection: 'column',
+  },
+  keyView: {
+    alignItems: "center",
+    marginHorizontal: "auto",
   },
   plantKey: {
+    alignSelf: "flex-start",
     fontWeight: 'bold',
-    width: 130,
-    marginLeft: 10
   },
   plantValue: {
-    fontWeight: 'normal'
+    fontWeight: 'normal',
+    paddingVertical: responsiveHeight(.8)
   },
   logo: {
-    width: 66,
-    height: 58,
+    width: 130,
+    height: 130
   },
   header: {
     fontSize: 50,
