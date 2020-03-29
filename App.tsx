@@ -14,7 +14,7 @@ import {
 import { AppLoading } from "expo";
 
 const httpLink = new HttpLink({
-  uri: "http://localhost:4000/graphql"
+  uri: "http://192.168.1.157:4000/graphql"
 });
 
 const cache = new InMemoryCache()
@@ -23,7 +23,7 @@ const client: any = new ApolloClient({link: httpLink, cache: cache});
 
 const fetchFonts = () => {
   return Font.loadAsync({
-    'BebasNeue': require('./assets/fonts/BebasNeue-Bold.ttf')
+    'BebasNeue': require('./assets/fonts/BebasNeue-Regular.ttf')
   });
 };
 
@@ -41,6 +41,7 @@ export default function App() {
 
   return (
     <ApolloProvider client={client}>
+        <StatusBar barStyle='dark-content' />
         <SafeAreaView style={styles.container}>
           <StatusBar barStyle="default"/>
           <View style={styles.headerContainer}>

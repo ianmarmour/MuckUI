@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View, Image, Fragment, ScrollView } from "react-native";
+import { StyleSheet, Text, View, Image, ScrollView } from "react-native";
 import { useQuery } from '@apollo/react-hooks';
 import gql from  'graphql-tag';  
 import {
@@ -7,6 +7,7 @@ import {
   responsiveWidth,
   responsiveFontSize
 } from "react-native-responsive-dimensions";
+import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 const FETCH_ALL_PLANTS = gql `query {  
   plants {
@@ -19,6 +20,23 @@ const FETCH_ALL_PLANTS = gql `query {
 }  
 `;  
 
+const RightActions = () => {
+  return (
+    <View
+      style={{ flex: 1, backgroundColor: 'red', justifyContent: 'center', alignItems: "center",
+    }}>
+      <Text
+        style={{
+          color: 'white',
+          paddingHorizontal: 10,
+          fontWeight: '600'
+        }}>
+        Delete
+      </Text>
+    </View>
+  )
+ }
+
 export default function Plant() {
   const { loading, data } = useQuery<any, any>(
     FETCH_ALL_PLANTS
@@ -28,31 +46,36 @@ export default function Plant() {
     {loading ? (<Text>Loading...</Text>) : (
         data.plants.map(plant => {
           return (
-            <View style={styles.plantContainer}>
-              <View style ={styles.plantHeader}>
-                <Image style={styles.logo} source={require("../../assets/plant.png")} />
+            <Swipeable renderRightActions={RightActions}>
+              <View style={styles.plantContainer}>
+                <View style ={styles.plantHeader}>
+                  <Image style={styles.logo} source={require("../../assets/plant.png")} />
+                </View>
+                <View style={styles.textContainer}>
+                  <View style ={styles.plantDetails}>
+                    <View style={styles.keyView}>
+                      <Text style={styles.plantKey}>Name:</Text>
+                    </View>
+                    <Text style={styles.plantValue}>{plant.name}</Text>
+                  </View>
+                  <View style ={styles.plantDetails}>
+                    <View style={styles.keyView}>
+                      <Text style={styles.plantKey}>Soil Moisture:</Text>
+                    </View>
+                    <Text style={styles.plantValue}>{plant.soil.moistureLevel}</Text>
+                  </View>
+                  <View style ={styles.plantDetails}>
+                    <View style={styles.keyView}>
+                      <Text style={styles.plantKey}>Soil Brand:</Text>
+                    </View>
+                    <Text style={styles.plantValue}>{plant.soil.brand}</Text>
+                  </View>
+                </View>
+                <View>
+                  <Text> Fuck </Text>
+                </View>
               </View>
-              <View style={styles.textContainer}>
-                <View style ={styles.plantDetails}>
-                  <View style={styles.keyView}>
-                    <Text style={styles.plantKey}>Name:</Text>
-                  </View>
-                  <Text style={styles.plantValue}>{plant.name}</Text>
-                </View>
-                <View style ={styles.plantDetails}>
-                  <View style={styles.keyView}>
-                    <Text style={styles.plantKey}>Soil Moisture:</Text>
-                  </View>
-                  <Text style={styles.plantValue}>{plant.soil.moistureLevel}</Text>
-                </View>
-                <View style ={styles.plantDetails}>
-                  <View style={styles.keyView}>
-                    <Text style={styles.plantKey}>Soil Brand:</Text>
-                  </View>
-                  <Text style={styles.plantValue}>{plant.soil.brand}</Text>
-                </View>
-              </View>
-            </View>
+              </Swipeable>
           )
         }))}
           
@@ -110,8 +133,8 @@ const styles = StyleSheet.create({
     height: 130
   },
   header: {
-    fontSize: 50,
+    fontSize: responsiveFontSize(2),
     fontFamily: "BebasNeue-Bold",
     color: "#282a2c"
-  }
+  },
 });
