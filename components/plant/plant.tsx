@@ -71,9 +71,6 @@ export default function Plant() {
                     <Text style={styles.plantValue}>{plant.soil.brand}</Text>
                   </View>
                 </View>
-                <View>
-                  <Text> Fuck </Text>
-                </View>
               </View>
               </Swipeable>
           )
