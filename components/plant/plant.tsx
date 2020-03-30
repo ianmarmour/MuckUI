@@ -1,70 +1,80 @@
-import React from "react";
-import { StyleSheet, Text, View, Image, ScrollView } from "react-native";
-import { useQuery } from '@apollo/react-hooks';
-import gql from  'graphql-tag';  
+import React, { useRef } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  FlatList
+} from "react-native";
+import { useQuery, useMutation } from "@apollo/react-hooks";
+import gql from "graphql-tag";
 import {
   responsiveHeight,
   responsiveWidth,
   responsiveFontSize
 } from "react-native-responsive-dimensions";
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+import Swiper from "react-native-swiper";
+import SwipeableViews from "react-swipeable-views-native";
 
-const FETCH_ALL_PLANTS = gql `query {  
-  plants {
-    name
-    soil {
-      moistureLevel
-      brand
+const FETCH_ALL_PLANTS = gql`
+  query {
+    plants {
+      _id
+      name
+      soil {
+        moistureLevel
+        brand
+      }
     }
-  }  
-}  
-`;  
+  }
+`;
 
-const RightActions = () => {
-  return (
-    <View
-      style={{ flex: 1, backgroundColor: 'red', justifyContent: 'center', alignItems: "center",
-    }}>
-      <Text
-        style={{
-          color: 'white',
-          paddingHorizontal: 10,
-          fontWeight: '600'
-        }}>
-        Delete
-      </Text>
-    </View>
-  )
- }
+const DELETE_PLANTS = gql`
+  mutation DeletePlants($id: ID!) {
+    deletePlant(plant: { _id: $id })
+  }
+`;
 
 export default function Plant() {
-  const { loading, data } = useQuery<any, any>(
-    FETCH_ALL_PLANTS
-  );
+  const [deletePlantT] = useMutation(DELETE_PLANTS);
+  const { client, loading, data } = useQuery<any, any>(FETCH_ALL_PLANTS);
 
-  return (<ScrollView style={styles.verticalScrollContainer} showsVerticalScrollIndicator={false}>
-    {loading ? (<Text>Loading...</Text>) : (
+  return (
+    <ScrollView
+      style={styles.verticalScrollContainer}
+      showsVerticalScrollIndicator={false}
+    >
+      {loading ? (
+        <Text>Loading...</Text>
+      ) : (
         data.plants.map(plant => {
           return (
-            <Swipeable renderRightActions={RightActions}>
+            <SwipeableViews style={styles.swipeableContainer}>
               <View style={styles.plantContainer}>
-                <View style ={styles.plantHeader}>
-                  <Image style={styles.logo} source={require("../../assets/plant.png")} />
+                <View style={styles.plantHeader}>
+                  <Image
+                    style={styles.logo}
+                    source={require("../../assets/plant.png")}
+                  />
                 </View>
                 <View style={styles.textContainer}>
-                  <View style ={styles.plantDetails}>
+                  <View style={styles.plantDetails}>
                     <View style={styles.keyView}>
                       <Text style={styles.plantKey}>Name:</Text>
                     </View>
                     <Text style={styles.plantValue}>{plant.name}</Text>
                   </View>
-                  <View style ={styles.plantDetails}>
+                  <View style={styles.plantDetails}>
                     <View style={styles.keyView}>
                       <Text style={styles.plantKey}>Soil Moisture:</Text>
                     </View>
-                    <Text style={styles.plantValue}>{plant.soil.moistureLevel}</Text>
+                    <Text style={styles.plantValue}>
+                      {plant.soil.moistureLevel}
+                    </Text>
                   </View>
-                  <View style ={styles.plantDetails}>
+                  <View style={styles.plantDetails}>
                     <View style={styles.keyView}>
                       <Text style={styles.plantKey}>Soil Brand:</Text>
                     </View>
@@ -72,58 +82,83 @@ export default function Plant() {
                   </View>
                 </View>
               </View>
-              </Swipeable>
-          )
-        }))}
-          
+              <TouchableOpacity
+                onPress={async () => {
+                  try {
+                    const { foo }: any = await deletePlantT({
+                      variables: { id: plant._id }
+                    });
+                    console.log(foo);
+                    client.resetStore();
+                  } catch (e) {
+                    console.log(e);
+                  }
+                }}
+              >
+                <View style={styles.deleteButton}>
+                  <Text> Delete </Text>
+                </View>
+              </TouchableOpacity>
+            </SwipeableViews>
+          );
+        })
+      )}
     </ScrollView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   verticalScrollContainer: {
-    backgroundColor: "white",
+    backgroundColor: "white"
+  },
+  swipeableContainer: {
+    width: responsiveWidth(100)
+  },
+  deleteButton: {
+    backgroundColor: "red",
+    width: responsiveWidth(100),
+    height: 130
   },
   plantContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     alignItems: "center",
-    borderColor: 'lightgrey',
+    borderColor: "lightgrey",
     borderBottomWidth: 1,
     backgroundColor: "white",
     width: responsiveWidth(100),
     paddingTop: responsiveHeight(1),
     paddingBottom: responsiveHeight(1),
     paddingLeft: responsiveHeight(1),
-    paddingRight: responsiveHeight(1),
+    paddingRight: responsiveHeight(1)
   },
   plantHeader: {
     alignItems: "center",
-    borderColor: 'lightgrey',
+    borderColor: "lightgrey",
     borderWidth: 3,
     height: 130,
     width: 130,
-    overflow: 'hidden',
+    overflow: "hidden"
   },
   plantDetails: {
     alignItems: "center",
     marginHorizontal: "auto",
-    flexDirection: 'row',
+    flexDirection: "row"
   },
   textContainer: {
     marginLeft: responsiveWidth(10),
-    flexDirection: 'column',
+    flexDirection: "column"
   },
   keyView: {
     alignItems: "center",
-    marginHorizontal: "auto",
+    marginHorizontal: "auto"
   },
   plantKey: {
     alignSelf: "flex-start",
-    fontWeight: 'bold',
+    fontWeight: "bold"
   },
   plantValue: {
-    fontWeight: 'normal',
-    paddingVertical: responsiveHeight(.8)
+    fontWeight: "normal",
+    paddingVertical: responsiveHeight(0.8)
   },
   logo: {
     width: 130,
@@ -134,4 +169,24 @@ const styles = StyleSheet.create({
     fontFamily: "BebasNeue-Bold",
     color: "#282a2c"
   },
+  slideContainer: {
+    height: 100
+  },
+  slide: {
+    padding: 15,
+    height: 100
+  },
+  slide1: {
+    backgroundColor: "#FEA900"
+  },
+  slide2: {
+    backgroundColor: "#B3DC4A"
+  },
+  slide3: {
+    backgroundColor: "#6AC0FF"
+  },
+  text: {
+    color: "#fff",
+    fontSize: 16
+  }
 });
