@@ -21,9 +21,10 @@ import SwipeableViews from "react-swipeable-views-native";
 const FETCH_ALL_PLANTS = gql`
   query {
     plants {
-      _id
+      id
       name
       soil {
+        _id
         moistureLevel
         brand
       }
@@ -33,7 +34,7 @@ const FETCH_ALL_PLANTS = gql`
 
 const DELETE_PLANTS = gql`
   mutation DeletePlants($id: ID!) {
-    deletePlant(plant: { _id: $id })
+    deletePlant(plant: { id: $id })
   }
 `;
 
@@ -86,7 +87,7 @@ export default function Plant() {
                 onPress={async () => {
                   try {
                     const { foo }: any = await deletePlantT({
-                      variables: { id: plant._id }
+                      variables: { id: plant.id }
                     });
                     console.log(foo);
                     client.resetStore();
@@ -109,6 +110,7 @@ export default function Plant() {
 
 const styles = StyleSheet.create({
   verticalScrollContainer: {
+    width: responsiveWidth(100),
     backgroundColor: "white"
   },
   swipeableContainer: {

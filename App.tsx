@@ -1,13 +1,8 @@
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  SafeAreaView,
-  StatusBar
-} from "react-native";
+import { StyleSheet, Text, View, SafeAreaView, StatusBar } from "react-native";
 import Plant from "./components/plant/plant";
+import PlantCreate from "./components/plant/createPlant";
+
 import { ApolloClient } from "apollo-client";
 import { HttpLink } from "apollo-link-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
@@ -15,13 +10,13 @@ import { ApolloProvider } from "@apollo/react-hooks";
 import * as Font from "expo-font";
 import {
   responsiveHeight,
-  responsiveWidth,
   responsiveFontSize
 } from "react-native-responsive-dimensions";
 import { AppLoading } from "expo";
+import ScrollableTabView from "react-native-scrollable-tab-view";
 
 const httpLink = new HttpLink({
-  uri: "http://localhost:4000/graphql"
+  uri: "http://192.168.1.102:4000/graphql"
 });
 
 const cache = new InMemoryCache();
@@ -54,7 +49,10 @@ export default function App() {
         <View style={styles.headerContainer}>
           <Text style={styles.header}>Muck Moisture Tracker</Text>
         </View>
-        <Plant />
+        <ScrollableTabView locked={true}>
+          <Plant tabLabel="View" />
+          <PlantCreate tabLabel="Create" />
+        </ScrollableTabView>
       </SafeAreaView>
     </ApolloProvider>
   );
@@ -79,8 +77,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#D3EEDD"
   },
   headerContainer: {
-    borderColor: "lightgrey",
-    borderBottomWidth: responsiveHeight(0.25)
+    borderColor: "lightgrey"
   },
   topBorder: {
     backgroundColor: "#D3EEDD"
