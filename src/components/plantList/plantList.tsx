@@ -8,7 +8,9 @@ import SwipeableViews from "react-swipeable-views-native";
 import styles from "./plantList.style";
 
 const PlantList = () => {
-  const [deletePlantT] = useMutation(deletePlant);
+  const [deletePlantT] = useMutation(deletePlant, {
+    refetchQueries: [{ query: getPlants }]
+  });
   const { client, loading, data } = useQuery<any, any>(getPlants);
 
   return (
@@ -21,16 +23,14 @@ const PlantList = () => {
       ) : (
         data.plants.map(plant => {
           return (
-            <SwipeableViews style={styles.swipeableContainer}>
+            <SwipeableViews key={plant.id} style={styles.swipeableContainer}>
               <Plant name={plant.name} soil={plant.soil} />
               <TouchableOpacity
                 onPress={async () => {
                   try {
-                    const deletePlantResponse: any = await deletePlantT({
+                    await deletePlantT({
                       variables: { id: plant.id }
                     });
-                    console.log(deletePlantResponse);
-                    client.resetStore();
                   } catch (e) {
                     console.log(e);
                   }

@@ -24,7 +24,7 @@ const plantReducer = (state, action) => {
   }
 };
 
-const PlantCreate = () => {
+const CreatePlant = () => {
   const [plantState, updatePlantState] = useReducer(plantReducer, {
     soil: {}
   });
@@ -103,4 +103,4 @@ const PlantCreate = () => {
   );
 };
 
-export default PlantCreate;
+export default CreatePlant;
