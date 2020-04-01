@@ -1,14 +1,10 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, TextInput } from "react-native";
+import { Text, View, TextInput } from "react-native";
 import { useMutation } from "@apollo/react-hooks";
 import { Button } from "react-native-elements";
-import {
-  responsiveWidth,
-  responsiveFontSize
-} from "react-native-responsive-dimensions";
-import { createPlant } from "../../graphql/mutations/createPlant"
-import { getPlants } from "../../graphql/queries/getPlants"
-
+import { createPlant } from "../../graphql/mutations/createPlant";
+import { getPlants } from "../../graphql/queries/getPlants";
+import styles from "./createPlant.style";
 
 const returnUpdatedPlant = (
   plantState,
@@ -115,34 +111,3 @@ export default function PlantCreate() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  inputContainer: {
-    flex: 1,
-    width: responsiveWidth(100),
-    alignItems: "center",
-    backgroundColor: "white"
-  },
-  forumTitle: {
-    fontSize: responsiveFontSize(3),
-    fontFamily: "BebasNeue",
-    color: "#282a2c",
-    paddingTop: 15
-  },
-  inputStyle: {
-    marginTop: 20,
-    width: 300,
-    height: 40,
-    paddingHorizontal: 10,
-    borderRadius: 50,
-    backgroundColor: "lightgrey"
-  },
-  buttonStyle: {
-    marginTop: 20,
-    width: 300,
-    height: 40,
-    paddingHorizontal: 10,
-    borderRadius: 50,
-    backgroundColor: "lightgrey"
-  }
-});
