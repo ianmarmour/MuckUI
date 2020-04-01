@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useReducer } from "react";
 import { Text, View, TextInput } from "react-native";
 import { useMutation } from "@apollo/react-hooks";
 import { Button } from "react-native-elements";
@@ -6,41 +6,26 @@ import { createPlant } from "../../graphql/mutations/createPlant";
 import { getPlants } from "../../graphql/queries/getPlants";
 import styles from "./createPlant.style";
 
-const returnUpdatedPlant = (
-  plantState,
-  name,
-  soilBrand,
-  soilid,
-  moistureLevel
-) => {
-  let plantStateCopy = { ...plantState };
-
-  if (name) {
-    plantStateCopy.name = name;
+const updatePlant = (state, action) => {
+  switch (action.type) {
+    case "UPDATE_PLANT": {
+      let stateCopy = { ...state };
+      stateCopy[action.property] = action.propertyValue;
+      return stateCopy;
+    }
+    case "UPDATE_SOIL": {
+      let stateCopy = { ...state };
+      stateCopy.soil[action.property] = action.propertyValue;
+      return stateCopy;
+    }
+    default: {
+      throw new Error();
+    }
   }
-  if (soilBrand) {
-    plantStateCopy.soil.brand = soilBrand;
-  }
-  if (soilid) {
-    plantStateCopy.soil.id = soilid;
-  }
-  if (moistureLevel) {
-    plantStateCopy.soil.moistureLevel = moistureLevel;
-  }
-
-  return plantStateCopy;
 };
 
 const PlantCreate = () => {
-  const [plantInfo, setPlantInfo] = useState({
-    name: "",
-    soil: {
-      id: "",
-      brand: "",
-      moistureLevel: ""
-    }
-  });
-
+  const [plantState, setPlantState] = useReducer(updatePlant, { soil: {} });
   const [createPlantMutation] = useMutation(createPlant, {
     refetchQueries: [{ query: getPlants }]
   });
@@ -51,28 +36,44 @@ const PlantCreate = () => {
       <TextInput
         placeholder="Name"
         style={styles.inputStyle}
-        onChangeText={text => {
-          setPlantInfo(returnUpdatedPlant(plantInfo, text, "", "", ""));
+        onChangeText={textInput => {
+          setPlantState({
+            type: "UPDATE_PLANT",
+            property: "name",
+            propertyValue: textInput
+          });
         }}
       />
       <Text style={styles.forumTitle}>Soil</Text>
       <TextInput
-        onChangeText={text => {
-          setPlantInfo(returnUpdatedPlant(plantInfo, "", "", text, ""));
+        onChangeText={textInput => {
+          setPlantState({
+            type: "UPDATE_SOIL",
+            property: "id",
+            propertyValue: textInput
+          });
         }}
         placeholder="ID"
         style={styles.inputStyle}
       />
       <TextInput
-        onChangeText={text => {
-          setPlantInfo(returnUpdatedPlant(plantInfo, "", text, "", ""));
+        onChangeText={textInput => {
+          setPlantState({
+            type: "UPDATE_SOIL",
+            property: "brand",
+            propertyValue: textInput
+          });
         }}
         placeholder="Brand"
         style={styles.inputStyle}
       />
       <TextInput
-        onChangeText={text => {
-          setPlantInfo(returnUpdatedPlant(plantInfo, "", "", "", text));
+        onChangeText={textInput => {
+          setPlantState({
+            type: "UPDATE_SOIL",
+            property: "moistureLevel",
+            propertyValue: parseInt(textInput)
+          });
         }}
         placeholder="Moisture"
         style={styles.inputStyle}
@@ -84,10 +85,12 @@ const PlantCreate = () => {
           e.preventDefault();
 
           try {
+            console.log(plantState);
+
             const createPlantResponse: any = await createPlantMutation({
               variables: {
-                name: plantInfo.name,
-                soil: plantInfo.soil
+                name: plantState.name,
+                soil: plantState.soil
               }
             });
 
