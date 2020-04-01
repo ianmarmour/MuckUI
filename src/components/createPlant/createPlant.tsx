@@ -32,7 +32,7 @@ const returnUpdatedPlant = (
   return plantStateCopy;
 };
 
-export default function PlantCreate() {
+function PlantCreate() {
   const [plantInfo, setPlantInfo] = useState({
     name: "",
     soil: {
@@ -111,3 +111,5 @@ export default function PlantCreate() {
     </View>
   );
 }
+
+export default PlantCreate;
