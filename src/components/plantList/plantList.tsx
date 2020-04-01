@@ -7,7 +7,7 @@ import { deletePlant } from "../../graphql/mutations/deletePlant";
 import SwipeableViews from "react-swipeable-views-native";
 import styles from "./plantList.style";
 
-function PlantList() {
+const PlantList = () => {
   const [deletePlantT] = useMutation(deletePlant);
   const { client, loading, data } = useQuery<any, any>(getPlants);
 
@@ -26,10 +26,10 @@ function PlantList() {
               <TouchableOpacity
                 onPress={async () => {
                   try {
-                    const { foo }: any = await deletePlantT({
+                    const deletePlantResponse: any = await deletePlantT({
                       variables: { id: plant.id }
                     });
-                    console.log(foo);
+                    console.log(deletePlantResponse);
                     client.resetStore();
                   } catch (e) {
                     console.log(e);
@@ -46,6 +46,6 @@ function PlantList() {
       )}
     </ScrollView>
   );
-}
+};
 
 export default PlantList;

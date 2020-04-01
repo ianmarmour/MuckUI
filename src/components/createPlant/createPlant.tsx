@@ -8,7 +8,6 @@ import styles from "./createPlant.style";
 
 const returnUpdatedPlant = (
   plantState,
-  id,
   name,
   soilBrand,
   soilid,
@@ -23,7 +22,7 @@ const returnUpdatedPlant = (
     plantStateCopy.soil.brand = soilBrand;
   }
   if (soilid) {
-    plantStateCopy.soil._id = soilid;
+    plantStateCopy.soil.id = soilid;
   }
   if (moistureLevel) {
     plantStateCopy.soil.moistureLevel = moistureLevel;
@@ -32,24 +31,18 @@ const returnUpdatedPlant = (
   return plantStateCopy;
 };
 
-function PlantCreate() {
+const PlantCreate = () => {
   const [plantInfo, setPlantInfo] = useState({
     name: "",
     soil: {
-      _id: "",
+      id: "",
       brand: "",
       moistureLevel: ""
     }
   });
 
   const [createPlantMutation] = useMutation(createPlant, {
-    update(cache, { data: { createPlantMutation } }) {
-      const { plants } = cache.readQuery({ query: getPlants });
-      cache.writeQuery({
-        query: getPlants,
-        data: { plants: plants.concat([createPlant]) }
-      });
-    }
+    refetchQueries: [{ query: getPlants }]
   });
 
   return (
@@ -59,29 +52,27 @@ function PlantCreate() {
         placeholder="Name"
         style={styles.inputStyle}
         onChangeText={text => {
-          setPlantInfo(returnUpdatedPlant(plantInfo, "", text, "", "", ""));
+          setPlantInfo(returnUpdatedPlant(plantInfo, text, "", "", ""));
         }}
       />
       <Text style={styles.forumTitle}>Soil</Text>
       <TextInput
         onChangeText={text => {
-          setPlantInfo(returnUpdatedPlant(plantInfo, "", "", "", text, ""));
+          setPlantInfo(returnUpdatedPlant(plantInfo, "", "", text, ""));
         }}
         placeholder="ID"
         style={styles.inputStyle}
       />
       <TextInput
         onChangeText={text => {
-          setPlantInfo(returnUpdatedPlant(plantInfo, "", "", text, "", ""));
+          setPlantInfo(returnUpdatedPlant(plantInfo, "", text, "", ""));
         }}
         placeholder="Brand"
         style={styles.inputStyle}
       />
       <TextInput
         onChangeText={text => {
-          setPlantInfo(
-            returnUpdatedPlant(plantInfo, "", "", "", "", parseInt(text))
-          );
+          setPlantInfo(returnUpdatedPlant(plantInfo, "", "", "", text));
         }}
         placeholder="Moisture"
         style={styles.inputStyle}
@@ -91,18 +82,16 @@ function PlantCreate() {
         title="Create Plant"
         onPress={async e => {
           e.preventDefault();
-          try {
-            console.log(plantInfo);
 
-            const foo: any = await createPlantMutation({
+          try {
+            const createPlantResponse: any = await createPlantMutation({
               variables: {
-                id: plantInfo.id,
                 name: plantInfo.name,
                 soil: plantInfo.soil
               }
             });
 
-            console.log(foo);
+            console.log(createPlantResponse);
           } catch (e) {
             console.log(e);
           }
@@ -110,6 +99,6 @@ function PlantCreate() {
       />
     </View>
   );
-}
+};
 
 export default PlantCreate;

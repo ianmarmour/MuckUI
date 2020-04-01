@@ -14,4 +14,4 @@ const createPlant = gql`
   }
 `;
 
-export { createPlant }
+export { createPlant };
