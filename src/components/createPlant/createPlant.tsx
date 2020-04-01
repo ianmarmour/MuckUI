@@ -6,7 +6,7 @@ import { createPlant } from "../../graphql/mutations/createPlant";
 import { getPlants } from "../../graphql/queries/getPlants";
 import styles from "./createPlant.style";
 
-const updatePlant = (state, action) => {
+const plantReducer = (state, action) => {
   switch (action.type) {
     case "UPDATE_PLANT": {
       let stateCopy = { ...state };
@@ -25,7 +25,10 @@ const updatePlant = (state, action) => {
 };
 
 const PlantCreate = () => {
-  const [plantState, updatePlantState] = useReducer(updatePlant, { soil: {} });
+  const [plantState, updatePlantState] = useReducer(plantReducer, {
+    soil: {}
+  });
+
   const [createPlantMutation] = useMutation(createPlant, {
     refetchQueries: [{ query: getPlants }]
   });
