@@ -10,7 +10,7 @@ import {
 } from "react-native-responsive-dimensions";
 import ScrollableTabView from "react-native-scrollable-tab-view";
 import Plant from "./components/plant/plant";
-import PlantCreate from "./components/plant/createPlant";
+import PlantCreate from "./components/createPlant/createPlant";
 import { fontLoader } from "./utilities/fontLoader";
 const httpLink = new HttpLink({
   uri: "http://192.168.1.157:4000/graphql"
