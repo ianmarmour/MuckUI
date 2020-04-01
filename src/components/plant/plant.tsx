@@ -24,7 +24,7 @@ const FETCH_ALL_PLANTS = gql`
       id
       name
       soil {
-        _id
+        id
         moistureLevel
         brand
       }
@@ -57,7 +57,7 @@ export default function Plant() {
                 <View style={styles.plantHeader}>
                   <Image
                     style={styles.logo}
-                    source={require("../../assets/plant.png")}
+                    source={require("../../../assets/images/plant.png")}
                   />
                 </View>
                 <View style={styles.textContainer}>

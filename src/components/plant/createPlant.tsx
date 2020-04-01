@@ -1,41 +1,14 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View, TextInput } from "react-native";
 import { useMutation } from "@apollo/react-hooks";
-import gql from "graphql-tag";
 import { Button } from "react-native-elements";
 import {
-  responsiveHeight,
   responsiveWidth,
   responsiveFontSize
 } from "react-native-responsive-dimensions";
+import { createPlant } from "../../graphql/mutations/createPlant"
+import { getPlants } from "../../graphql/queries/getPlants"
 
-const GET_PLANTS = gql`
-  query {
-    plants {
-      id
-      name
-      soil {
-        _id
-        moistureLevel
-        brand
-      }
-    }
-  }
-`;
-
-const CREATE_PLANT = gql`
-  mutation CreatePlant($name: String, $soil: createSoilInput) {
-    createPlant(plant: { name: $name, soil: $soil }) {
-      id
-      name
-      soil {
-        _id
-        moistureLevel
-        brand
-      }
-    }
-  }
-`;
 
 const returnUpdatedPlant = (
   plantState,
@@ -73,11 +46,11 @@ export default function PlantCreate() {
     }
   });
 
-  const [createPlant] = useMutation(CREATE_PLANT, {
-    update(cache, { data: { createPlant } }) {
-      const { plants } = cache.readQuery({ query: GET_PLANTS });
+  const [createPlantMutation] = useMutation(createPlant, {
+    update(cache, { data: { createPlantMutation } }) {
+      const { plants } = cache.readQuery({ query: getPlants });
       cache.writeQuery({
-        query: GET_PLANTS,
+        query: getPlants,
         data: { plants: plants.concat([createPlant]) }
       });
     }
@@ -125,7 +98,7 @@ export default function PlantCreate() {
           try {
             console.log(plantInfo);
 
-            const foo: any = await createPlant({
+            const foo: any = await createPlantMutation({
               variables: {
                 id: plantInfo.id,
                 name: plantInfo.name,
