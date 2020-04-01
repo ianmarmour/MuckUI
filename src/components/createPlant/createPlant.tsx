@@ -25,7 +25,7 @@ const updatePlant = (state, action) => {
 };
 
 const PlantCreate = () => {
-  const [plantState, setPlantState] = useReducer(updatePlant, { soil: {} });
+  const [plantState, updatePlantState] = useReducer(updatePlant, { soil: {} });
   const [createPlantMutation] = useMutation(createPlant, {
     refetchQueries: [{ query: getPlants }]
   });
@@ -37,7 +37,7 @@ const PlantCreate = () => {
         placeholder="Name"
         style={styles.inputStyle}
         onChangeText={textInput => {
-          setPlantState({
+          updatePlantState({
             type: "UPDATE_PLANT",
             property: "name",
             propertyValue: textInput
@@ -47,7 +47,7 @@ const PlantCreate = () => {
       <Text style={styles.forumTitle}>Soil</Text>
       <TextInput
         onChangeText={textInput => {
-          setPlantState({
+          updatePlantState({
             type: "UPDATE_SOIL",
             property: "id",
             propertyValue: textInput
@@ -58,7 +58,7 @@ const PlantCreate = () => {
       />
       <TextInput
         onChangeText={textInput => {
-          setPlantState({
+          updatePlantState({
             type: "UPDATE_SOIL",
             property: "brand",
             propertyValue: textInput
@@ -69,7 +69,7 @@ const PlantCreate = () => {
       />
       <TextInput
         onChangeText={textInput => {
-          setPlantState({
+          updatePlantState({
             type: "UPDATE_SOIL",
             property: "moistureLevel",
             propertyValue: parseInt(textInput)
@@ -85,16 +85,12 @@ const PlantCreate = () => {
           e.preventDefault();
 
           try {
-            console.log(plantState);
-
-            const createPlantResponse: any = await createPlantMutation({
+            await createPlantMutation({
               variables: {
                 name: plantState.name,
                 soil: plantState.soil
               }
             });
-
-            console.log(createPlantResponse);
           } catch (e) {
             console.log(e);
           }
